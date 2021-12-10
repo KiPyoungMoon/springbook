@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -23,20 +24,26 @@ public class UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    private RowMapper<User> userMapper = new RowMapper<User>() {
+        public User mapRow(ResultSet rSet, int rowNum) throws SQLException {
+            User user = new User();
+            user.setId(rSet.getString("id"));
+            user.setName(rSet.getString("name"));
+            user.setPassword(rSet.getString("password"));
+            return user;
+        }
+    };
+
     public void add(User user) {
         this.jdbcTemplate.update("insert into users(id, name, password) values (?,?,?)", user.getId(), user.getName(), user.getPassword());
     }
 
     public User get(String id)  {
-        return this.jdbcTemplate.queryForObject("select * from users where id = ?", new Object[] {id}, new RowMapper<User>() {
-            public User mapRow(ResultSet rSet, int rowNum) throws SQLException {
-                User user = new User();
-                user.setId(rSet.getString("id"));
-                user.setName(rSet.getString("name"));
-                user.setPassword(rSet.getString("password"));
-                return user;
-            }
-        });
+        return this.jdbcTemplate.queryForObject("select * from users where id = ?", new Object[] {id}, this.userMapper);
+    }
+
+    public List<User> getAll() {
+        return this.jdbcTemplate.query("select * from users order by name", this.userMapper);
     }
 
     public void deleteAll() {

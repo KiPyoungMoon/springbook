@@ -1,6 +1,7 @@
 package springbook;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,12 +51,13 @@ public class UserDaoTest {
 
         User user1 = new User("kpMoon1", "문기평", "1234");
         User user2 = new User("kpMoon2", "퐁2", "1234");
-        //User user3 = new User("kpMoon3", "퐁3", "1234");
+        User user3 = new User("kpMoon3", "강연3", "1234");
 
         userDao.add(user1);
         userDao.add(user2);
+        userDao.add(user3);
 
-        assertThat(userDao.getCount(), is(2));
+        assertThat(userDao.getCount(), is(3));
         
         User getUser1 = userDao.get(user1.getId());
         assertThat(user1.getName(), is(getUser1.getName()));
@@ -64,6 +66,22 @@ public class UserDaoTest {
         User getUser2 = userDao.get(user2.getId());
         assertThat(user2.getName(), is(getUser2.getName()));
         assertThat(user2.getPassword(), is(getUser2.getPassword()));
+
+        User getUser3 = userDao.get(user3.getId());
+        assertThat(user3.getName(), is(getUser3.getName()));
+        assertThat(user3.getPassword(), is(getUser3.getPassword()));
+
+        List<User>  getUsers = userDao.getAll();
+        User getAllUser1 = getUsers.get(0);
+        User getAllUser2 = getUsers.get(1);
+        User getAllUser3 = getUsers.get(2);
+
+        assertThat(user1.getName(), is(getAllUser2.getName()));
+        assertThat(user1.getPassword(), is(getAllUser2.getPassword()));
+        assertThat(user2.getName(), is(getAllUser3.getName()));
+        assertThat(user2.getPassword(), is(getAllUser3.getPassword()));
+        assertThat(user3.getName(), is(getAllUser1.getName()));
+        assertThat(user3.getPassword(), is(getAllUser1.getPassword()));
     }
     
     @Test(expected = EmptyResultDataAccessException.class)
