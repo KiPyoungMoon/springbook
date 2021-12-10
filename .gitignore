@@ -1,5 +1,0 @@
-target/*
-target/surefire-reports/springbook.AppTest.txt
-target/surefire-reports/springbook.UserDaoTest.txt
-target/surefire-reports/TEST-springbook.AppTest.xml
-target/surefire-reports/TEST-springbook.UserDaoTest.xml
