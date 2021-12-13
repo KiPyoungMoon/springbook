@@ -13,7 +13,7 @@ public class UserDaoTest {
         
         //ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
         ApplicationContext context = new GenericXmlApplicationContext("springbook/user/dao/applicationContext.xml");
-        UserDao userDao = context.getBean("userDao", UserDao.class); //getBean("이름", 리턴타입);
+        UserDaoJdbc userDao = context.getBean("userDao", UserDaoJdbc.class); //getBean("이름", 리턴타입);
         //UserDao userDao = new DaoFactory().UserDao(); 팩토리 패턴 생성자를 위의 빈 주입 방식으로 변경.
         //((ConfigurableApplicationContext)context).close(); // 'context' is never closed 경고로 추가
         

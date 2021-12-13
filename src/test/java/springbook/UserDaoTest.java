@@ -16,7 +16,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import springbook.user.dao.UserDao;
+import springbook.user.dao.UserDaoJdbc;
 import springbook.user.domain.User;
 
 /**
@@ -30,7 +30,7 @@ public class UserDaoTest {
     private ApplicationContext context;
     
     @Autowired
-    private UserDao userDao;
+    private UserDaoJdbc userDao;
 
     @Before
     public void setUp() {
