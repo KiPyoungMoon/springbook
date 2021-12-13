@@ -16,6 +16,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import springbook.user.dao.DuplicateUserIdException;
 import springbook.user.dao.UserDaoJdbc;
 import springbook.user.domain.User;
 
@@ -39,7 +40,15 @@ public class UserDaoTest {
          */
         //ApplicationContext context = new GenericXmlApplicationContext("./springbook/user/dao/applicationContext.xml"); // 경로 설정에 유의
         //this.userDao = context.getBean("userDao", UserDao.class);
+        
+        user1 = new User("kpMoon1", "문기평", "1234");
+        user2 = new User("kpMoon2", "퐁2", "1234");
+        user3 = new User("kpMoon3", "강연3", "1234");
     }
+
+    User user1;
+    User user2;
+    User user3;
 
     @Test
     public void addAndGet() throws SQLException, ClassNotFoundException {
@@ -49,9 +58,9 @@ public class UserDaoTest {
         
         assertThat(userDao.getCount(), is(0));
 
-        User user1 = new User("kpMoon1", "문기평", "1234");
-        User user2 = new User("kpMoon2", "퐁2", "1234");
-        User user3 = new User("kpMoon3", "강연3", "1234");
+        // User user1 = new User("kpMoon1", "문기평", "1234");
+        // User user2 = new User("kpMoon2", "퐁2", "1234");
+        // User user3 = new User("kpMoon3", "강연3", "1234");
 
         userDao.add(user1);
         userDao.add(user2);
@@ -87,5 +96,14 @@ public class UserDaoTest {
     @Test(expected = EmptyResultDataAccessException.class)
     public void getUserFailture() throws SQLException {
         userDao.get("UnKnownId");
+    }
+
+    @Test(expected = DuplicateUserIdException.class)
+    public void duplicateKey() {
+        
+        userDao.deleteAll();
+
+        userDao.add(user1);
+        userDao.add(user1);
     }
 }
