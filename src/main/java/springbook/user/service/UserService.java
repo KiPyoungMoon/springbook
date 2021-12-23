@@ -19,10 +19,12 @@ public class UserService {
 
     public void upgradeLevels() {
         List<User> userList = userDao.getAll();
+
         Boolean isChange = null;
+        
         for (User user : userList) {
             isChange = false;
-            
+
             if ( user.getLogin() >= 50 && user.getLevel() == Level.BASIC ) {
                 user.setLevel(Level.SILVER);
                 isChange = true;
