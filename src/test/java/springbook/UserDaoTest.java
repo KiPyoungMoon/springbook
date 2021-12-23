@@ -108,4 +108,20 @@ public class UserDaoTest {
         userDao.add(user1);
         userDao.add(user1);
     }
+
+    @Test
+    public void updateUserInfo() throws SQLException, ClassNotFoundException {
+
+        userDao.deleteAll();
+        userDao.add(user1);
+        User targetUser = userDao.get(user1.getId());
+
+        targetUser.setPassword("1212");
+        targetUser.setName("수정자 이름");
+        userDao.update(targetUser);
+
+        User updatedUser = userDao.get(user1.getId());
+        this.checkSameUser(targetUser, updatedUser);
+    }
+
 }
