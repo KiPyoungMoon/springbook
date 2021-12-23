@@ -1,4 +1,4 @@
-package springbook;
+package springbook.user.dao;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -25,11 +25,11 @@ import springbook.user.domain.User.Level;
  * UserDao
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "../test-applicationContext.xml")
+@ContextConfiguration(locations = "../../../test-applicationContext.xml")
 public class UserDaoTest {
     
-    @Autowired
-    private ApplicationContext context;
+    // @Autowired
+    // private ApplicationContext context;
     
     @Autowired
     private UserDao userDao;
@@ -114,6 +114,7 @@ public class UserDaoTest {
 
         userDao.deleteAll();
         userDao.add(user1);
+        userDao.add(user2);
         User targetUser = userDao.get(user1.getId());
 
         targetUser.setPassword("1212");
@@ -121,7 +122,9 @@ public class UserDaoTest {
         userDao.update(targetUser);
 
         User updatedUser = userDao.get(user1.getId());
+        User checkUser2 = userDao.get(user2.getId());
         this.checkSameUser(targetUser, updatedUser);
+        this.checkSameUser(user2, checkUser2);
     }
 
 }
