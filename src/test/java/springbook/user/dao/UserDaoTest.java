@@ -10,14 +10,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+// import org.springframework.context.ApplicationContext;
 //import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import springbook.user.dao.DuplicateUserIdException;
-import springbook.user.dao.UserDao;
+//import springbook.user.dao.DuplicateUserIdException;
+//import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.domain.User.Level;
 
@@ -119,6 +119,9 @@ public class UserDaoTest {
 
         targetUser.setPassword("1212");
         targetUser.setName("수정자 이름");
+        targetUser.setLevel(Level.SILVER);
+        targetUser.setLogin(55);
+        targetUser.setRecommand(22);
         userDao.update(targetUser);
 
         User updatedUser = userDao.get(user1.getId());
