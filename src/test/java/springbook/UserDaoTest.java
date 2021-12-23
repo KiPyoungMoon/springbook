@@ -17,7 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import springbook.user.dao.DuplicateUserIdException;
-import springbook.user.dao.UserDaoJdbc;
+import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.domain.User.Level;
 
@@ -32,7 +32,7 @@ public class UserDaoTest {
     private ApplicationContext context;
     
     @Autowired
-    private UserDaoJdbc userDao;
+    private UserDao userDao;
 
     @Before
     public void setUp() {
