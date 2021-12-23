@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.user.dao.DuplicateUserIdException;
 import springbook.user.dao.UserDaoJdbc;
 import springbook.user.domain.User;
+import springbook.user.domain.User.Level;
 
 /**
  * UserDao
@@ -41,9 +42,9 @@ public class UserDaoTest {
         //ApplicationContext context = new GenericXmlApplicationContext("./springbook/user/dao/applicationContext.xml"); // 경로 설정에 유의
         //this.userDao = context.getBean("userDao", UserDao.class);
         
-        user1 = new User("kpMoon1", "문기평", "1234");
-        user2 = new User("kpMoon2", "퐁2", "1234");
-        user3 = new User("kpMoon3", "강연3", "1234");
+        user1 = new User("kpMoon1", "문기평", "1234", Level.BASIC, 1, 0);
+        user2 = new User("kpMoon2", "퐁2", "1234", Level.SILVER, 55, 10);
+        user3 = new User("kpMoon3", "강연3", "1234", Level.GOLD, 100, 40);
     }
 
     User user1;
@@ -53,46 +54,47 @@ public class UserDaoTest {
     @Test
     public void addAndGet() throws SQLException, ClassNotFoundException {
         
-        
         userDao.deleteAll();
         
         assertThat(userDao.getCount(), is(0));
 
-        // User user1 = new User("kpMoon1", "문기평", "1234");
-        // User user2 = new User("kpMoon2", "퐁2", "1234");
-        // User user3 = new User("kpMoon3", "강연3", "1234");
-
         userDao.add(user1);
-        userDao.add(user2);
-        userDao.add(user3);
+        assertThat(userDao.getCount(), is(1));
 
+        userDao.add(user2);
+        assertThat(userDao.getCount(), is(2));
+
+        userDao.add(user3);
         assertThat(userDao.getCount(), is(3));
         
         User getUser1 = userDao.get(user1.getId());
-        assertThat(user1.getName(), is(getUser1.getName()));
-        assertThat(user1.getPassword(), is(getUser1.getPassword()));
+        this.checkSameUser(user1, getUser1);
         
         User getUser2 = userDao.get(user2.getId());
-        assertThat(user2.getName(), is(getUser2.getName()));
-        assertThat(user2.getPassword(), is(getUser2.getPassword()));
+        this.checkSameUser(user2, getUser2);
 
         User getUser3 = userDao.get(user3.getId());
-        assertThat(user3.getName(), is(getUser3.getName()));
-        assertThat(user3.getPassword(), is(getUser3.getPassword()));
+        this.checkSameUser(user3, getUser3);
 
         List<User>  getUsers = userDao.getAll();
         User getAllUser1 = getUsers.get(0);
         User getAllUser2 = getUsers.get(1);
         User getAllUser3 = getUsers.get(2);
-
-        assertThat(user1.getName(), is(getAllUser2.getName()));
-        assertThat(user1.getPassword(), is(getAllUser2.getPassword()));
-        assertThat(user2.getName(), is(getAllUser3.getName()));
-        assertThat(user2.getPassword(), is(getAllUser3.getPassword()));
-        assertThat(user3.getName(), is(getAllUser1.getName()));
-        assertThat(user3.getPassword(), is(getAllUser1.getPassword()));
+        
+        this.checkSameUser(user1, getAllUser2);
+        this.checkSameUser(user2, getAllUser3);
+        this.checkSameUser(user3, getAllUser1);
     }
     
+    private void checkSameUser(User user1, User user2) {
+        assertThat(user1.getId(), is(user2.getId()));
+        assertThat(user1.getName(), is(user2.getName()));
+        assertThat(user1.getPassword(), is(user2.getPassword()));
+        assertThat(user1.getLevel(), is(user2.getLevel()));
+        assertThat(user1.getLogin(), is(user2.getLogin()));
+        assertThat(user1.getRecommand(), is(user2.getRecommand()));
+    }
+
     @Test(expected = EmptyResultDataAccessException.class)
     public void getUserFailture() throws SQLException {
         userDao.get("UnKnownId");

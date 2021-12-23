@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
 import springbook.user.domain.User;
+import springbook.user.domain.User.Level;
 
 public class UserDaoJdbc implements UserDao {
     
@@ -28,16 +29,22 @@ public class UserDaoJdbc implements UserDao {
     private RowMapper<User> userMapper = new RowMapper<User>() {
         public User mapRow(ResultSet rSet, int rowNum) throws SQLException {
             User user = new User();
+
             user.setId(rSet.getString("id"));
             user.setName(rSet.getString("name"));
             user.setPassword(rSet.getString("password"));
+            user.setLevel(Level.valueOf(rSet.getInt("level")));
+            user.setLogin(rSet.getInt("login"));
+            user.setRecommand(rSet.getInt("recommand"));
+
             return user;
         }
     };
 
     public void add(User user) throws DuplicateUserIdException {
         try {
-            this.jdbcTemplate.update("insert into users(id, name, password) values (?,?,?)", user.getId(), user.getName(), user.getPassword());
+            this.jdbcTemplate.update("insert into users(id, name, password, level, login, recommand) values (?,?,?,?,?,?)", user.getId(), user.getName(), user.getPassword(), 
+            user.getLevel().intValue(), user.getLogin(), user.getRecommand());
         } catch (DuplicateKeyException e) {
             throw new DuplicateUserIdException(e);
         }
