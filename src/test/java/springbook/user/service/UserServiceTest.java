@@ -71,4 +71,19 @@ public class UserServiceTest {
         User targetUser = userDao.get(user.getId());
         assertThat(targetUser.getLevel(), is(level));
     }
+
+    @Test
+    public void add() {
+        userDao.deleteAll();
+
+        User userAlreadyGetLevel = userList.get(4);
+        User userNoLevel = userList.get(0);
+        userNoLevel.setLevel(null);
+
+        userService.add(userAlreadyGetLevel);
+        userService.add(userNoLevel);
+
+        this.checkUserLevel(userList.get(4), userList.get(4).getLevel());
+        this.checkUserLevel(userList.get(0), Level.BASIC);
+    }
 }

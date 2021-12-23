@@ -20,22 +20,35 @@ public class UserService {
     public void upgradeLevels() {
         List<User> userList = userDao.getAll();
 
-        Boolean isChange = null;
-        
         for (User user : userList) {
-            isChange = false;
-
-            if ( user.getLogin() >= 50 && user.getLevel() == Level.BASIC ) {
-                user.setLevel(Level.SILVER);
-                isChange = true;
-            } else if ( user.getRecommand() >= 30 && user.getLevel() == Level.SILVER ) {
-                user.setLevel(Level.GOLD);
-                isChange = true;
-            }
-
-            if ( Boolean.TRUE.equals(isChange) ) {
-                userDao.update(user);
+            Boolean canUpgrade = this.canUpgradeLevel(user);
+            if ( Boolean.TRUE.equals(canUpgrade) ) {
+                this.upgradeLevel(user);
             }
         }
+    }
+
+    private void upgradeLevel(User user) {
+        if ( user.getLevel() == Level.BASIC ) user.setLevel(Level.SILVER);
+        else if ( user.getLevel() == Level.SILVER ) user.setLevel(Level.GOLD);
+
+        userDao.update(user);
+    }
+
+    private boolean canUpgradeLevel(User user) {
+        Level currentLevel = user.getLevel();
+        switch (currentLevel) {
+            case BASIC: return (user.getLogin() >= 50);
+            case SILVER: return (user.getRecommand() >= 30);
+            case GOLD: return false;
+            default: throw new IllegalArgumentException("Unknown Level: " + currentLevel);
+        }
+    }
+
+    public void add(User user) {
+        if ( user.getLevel() == null ) {
+            user.setLevel(Level.BASIC);
+        }
+        userDao.add(user);
     }
 }
