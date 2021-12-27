@@ -1,6 +1,8 @@
 package springbook.user.service;
 
 import static org.junit.Assert.assertNotNull;
+import static springbook.user.service.UserService.MIN_LOGIN_COUNT_FOR_SILVER;
+import static springbook.user.service.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -33,11 +35,11 @@ public class UserServiceTest {
     @Before
     public void setUp() {
         userList = Arrays.asList(
-            new User("mkp", "문기평", "1234", Level.BASIC, 49, 0),
-            new User("mkp2", "문기평2", "1234", Level.BASIC, 50, 0),
-            new User("mkp3", "문기평3", "1234", Level.SILVER, 60, 29),
-            new User("mkp4", "문기평4", "1234", Level.SILVER, 60, 30),
-            new User("mkp5", "문기평5", "1234", Level.GOLD, 100, 100)
+            new User("mkp", "문기평", "1234", Level.BASIC, MIN_LOGIN_COUNT_FOR_SILVER - 1, 0),
+            new User("mkp2", "문기평2", "1234", Level.BASIC, MIN_LOGIN_COUNT_FOR_SILVER, 0),
+            new User("mkp3", "문기평3", "1234", Level.SILVER, MIN_LOGIN_COUNT_FOR_SILVER + 10, MIN_RECOMMAND_COUNT_FOR_GOLD - 1),
+            new User("mkp4", "문기평4", "1234", Level.SILVER, MIN_LOGIN_COUNT_FOR_SILVER + 10, MIN_RECOMMAND_COUNT_FOR_GOLD),
+            new User("mkp5", "문기평5", "1234", Level.GOLD, MIN_LOGIN_COUNT_FOR_SILVER + 50, Integer.MAX_VALUE)
         );
     }
 
@@ -46,30 +48,25 @@ public class UserServiceTest {
         assertNotNull(userService);
     }
 
-    /**
-     * 가입 후 로그인 50회 이상이면 SILVER
-     * SELVER이고 추천 30회 이상이면 GOLD
-     */
     @Test
     public void upgradeUserLevel() {
         userDao.deleteAll();
 
-        for (User user : userList) {
-            userDao.add(user);
-        }
+        for (User user : userList) userDao.add(user);
 
         userService.upgradeLevels();
 
-        this.checkUserLevel(userList.get(0), Level.BASIC);
-        this.checkUserLevel(userList.get(1), Level.SILVER);
-        this.checkUserLevel(userList.get(2), Level.SILVER);
-        this.checkUserLevel(userList.get(3), Level.GOLD);
-        this.checkUserLevel(userList.get(4), Level.GOLD);
+        this.checkUserUpgraded(userList.get(0), false);
+        this.checkUserUpgraded(userList.get(1), true);
+        this.checkUserUpgraded(userList.get(2), false);
+        this.checkUserUpgraded(userList.get(3), true);
+        this.checkUserUpgraded(userList.get(4), false);
     }
 
-    private void checkUserLevel(User user, Level level) {
+    private void checkUserUpgraded(User user, Boolean result) {
         User targetUser = userDao.get(user.getId());
-        assertThat(targetUser.getLevel(), is(level));
+        if ( Boolean.TRUE.equals( result )) assertThat(targetUser.getLevel(), is(user.getLevel().nextLevel()));
+        else assertThat(targetUser.getLevel(), is(user.getLevel()));
     }
 
     @Test
@@ -83,8 +80,8 @@ public class UserServiceTest {
         userService.add(userAlreadyGetLevel);
         userService.add(userNoLevel);
 
-        this.checkUserLevel(userList.get(4), userList.get(4).getLevel());
-        this.checkUserLevel(userList.get(0), Level.BASIC);
+        this.checkUserUpgraded(userAlreadyGetLevel, false);
+        assertThat(userNoLevel.getLevel(), is(Level.BASIC));
     }
 
     @Test(expected = IllegalStateException.class)

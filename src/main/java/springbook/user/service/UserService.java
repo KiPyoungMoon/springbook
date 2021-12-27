@@ -2,44 +2,34 @@ package springbook.user.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.domain.User.Level;
 
 public class UserService {
     
-    @Autowired
+    public static final int MIN_LOGIN_COUNT_FOR_SILVER = 50;
+    public static final int MIN_RECOMMAND_COUNT_FOR_GOLD = 30;
+
     private UserDao userDao;
+    private UserLevelPolicy userLevelPolicy;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    public void setUserLevelPolicy(UserLevelPolicy userLevelPolicy) {
+        this.userLevelPolicy = userLevelPolicy;
     }
 
     public void upgradeLevels() {
         List<User> userList = userDao.getAll();
 
         for (User user : userList) {
-            Boolean canUpgrade = this.canUpgradeLevel(user);
+            Boolean canUpgrade = userLevelPolicy.canUpgradeLevel(user);
             if ( Boolean.TRUE.equals(canUpgrade) ) {
-                this.upgradeLevel(user);
+                userLevelPolicy.upgradeLevel(user);
             }
-        }
-    }
-
-    private void upgradeLevel(User user) {
-        user.upgradeLevel();
-        userDao.update(user);
-    }
-
-    private boolean canUpgradeLevel(User user) {
-        Level currentLevel = user.getLevel();
-        switch (currentLevel) {
-            case BASIC: return (user.getLogin() >= 50);
-            case SILVER: return (user.getRecommand() >= 30);
-            case GOLD: return false;
-            default: throw new IllegalArgumentException("Unknown Level: " + currentLevel);
         }
     }
 

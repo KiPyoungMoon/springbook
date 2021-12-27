@@ -16,5 +16,10 @@
 
     <bean id="userService" class="springbook.user.service.UserService">
         <property name="userDao" ref="userDao"></property>
+        <property name="userLevelPolicy" ref="currentUserLevelPolicy"></property>
+    </bean>
+
+    <bean id="currentUserLevelPolicy" class="springbook.user.service.CurrentUserLevelPolicy">
+        <property name="userDao" ref="userDao"></property>
     </bean>
 </beans>
