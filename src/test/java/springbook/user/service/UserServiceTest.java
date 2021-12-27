@@ -88,7 +88,7 @@ public class UserServiceTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void upgradeMaxLevel() {
+    public void cannotUpgradeMaxLevel() {
         User targetUser = userList.get(4);
         targetUser.upgradeLevel();
     }
