@@ -63,6 +63,16 @@ public class User {
 		this.recommand = recommand;
 	}
 
+	public void upgradeLevel() {
+		Level nextLevel = this.level.nextLevel();
+
+		if ( nextLevel == null ) {
+			throw new IllegalStateException(Level.valueOf(this.level.value) +"은 업그레이드 할 수 없습니다.");
+		} else {
+			this.level = nextLevel;
+		}
+	}
+
 	public enum Level {
 		GOLD(3, null), SILVER(2, GOLD), BASIC(1, SILVER);
 

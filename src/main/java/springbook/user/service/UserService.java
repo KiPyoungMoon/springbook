@@ -29,7 +29,7 @@ public class UserService {
     }
 
     private void upgradeLevel(User user) {
-        user.setLevel(user.getLevel().nextLevel());
+        user.upgradeLevel();
         userDao.update(user);
     }
 
