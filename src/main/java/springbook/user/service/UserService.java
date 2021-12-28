@@ -4,7 +4,7 @@ import java.util.List;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
-import springbook.user.domain.User.Level;
+import springbook.user.domain.Level;
 
 public class UserService {
     

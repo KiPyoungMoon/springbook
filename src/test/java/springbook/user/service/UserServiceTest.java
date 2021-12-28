@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
-import springbook.user.domain.User.Level;
+import springbook.user.domain.Level;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "../../../test-applicationContext.xml")
@@ -46,6 +46,11 @@ public class UserServiceTest {
     @Test
     public void bean() {
         assertNotNull(userService);
+    }
+
+    @Test
+    public void bean2() {
+        assertNotNull(userDao);
     }
 
     @Test
@@ -89,4 +94,5 @@ public class UserServiceTest {
         User targetUser = userList.get(4);
         targetUser.upgradeLevel();
     }
+
 }

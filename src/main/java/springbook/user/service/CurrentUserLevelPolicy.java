@@ -5,7 +5,7 @@ import static springbook.user.service.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
-import springbook.user.domain.User.Level;
+import springbook.user.domain.Level;
 
 public class CurrentUserLevelPolicy implements UserLevelPolicy {
     
