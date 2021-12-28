@@ -88,11 +88,4 @@ public class UserServiceTest {
         this.checkUserUpgraded(userAlreadyGetLevel, false);
         assertThat(userNoLevel.getLevel(), is(Level.BASIC));
     }
-
-    @Test(expected = IllegalStateException.class)
-    public void cannotUpgradeMaxLevel() {
-        User targetUser = userList.get(4);
-        targetUser.upgradeLevel();
-    }
-
 }
