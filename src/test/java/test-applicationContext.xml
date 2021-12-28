@@ -22,4 +22,13 @@
     <bean id="currentUserLevelPolicy" class="springbook.user.service.CurrentUserLevelPolicy">
         <property name="userDao" ref="userDao"></property>
     </bean>
+
+    <bean id="transactionTestUserService" class="springbook.user.service.TransactionTestUserService">
+        <property name="userDao" ref="userDao"></property>
+        <property name="transactionTestUserLevelPolicy" ref="transactionTestUserLevelPolicy"></property>
+    </bean>
+
+    <bean id="transactionTestUserLevelPolicy" class="springbook.user.service.TransactionTestUserLevelPolicy">
+        <property name="userDao" ref="userDao"></property>
+    </bean>
 </beans>

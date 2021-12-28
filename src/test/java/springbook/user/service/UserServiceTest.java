@@ -1,6 +1,7 @@
 package springbook.user.service;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static springbook.user.service.UserService.MIN_LOGIN_COUNT_FOR_SILVER;
 import static springbook.user.service.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,6 +27,9 @@ public class UserServiceTest {
     
     @Autowired
     UserService userService;
+
+    @Autowired
+    TransactionTestUserService transactionTestUserService;
 
     @Autowired
     UserDao userDao;
@@ -87,5 +91,19 @@ public class UserServiceTest {
 
         this.checkUserUpgraded(userAlreadyGetLevel, false);
         assertThat(userNoLevel.getLevel(), is(Level.BASIC));
+    }
+
+    @Test
+    public void upgradeAllOrNothing() {
+        userDao.deleteAll();
+        for (User user : userList) userDao.add(user);
+
+        transactionTestUserService.setId(userList.get(3).getId());
+        
+        try {
+            transactionTestUserService.upgradeLevels();
+            fail("TestUserServiceException Expected.");
+        } catch (TestUserServiceException e) {}
+        this.checkUserUpgraded(userList.get(1), false);
     }
 }
