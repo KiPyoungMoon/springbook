@@ -58,7 +58,12 @@ public class UserServiceTest {
     }
 
     @Test
-    public void upgradeUserLevel() {
+    public void bean3() {
+        assertNotNull(transactionTestUserService);
+    }
+
+    @Test
+    public void upgradeUserLevel() throws Exception {
         userDao.deleteAll();
 
         for (User user : userList) userDao.add(user);
@@ -94,7 +99,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void upgradeAllOrNothing() {
+    public void upgradeAllOrNothing() throws Exception {
         userDao.deleteAll();
         for (User user : userList) userDao.add(user);
 
