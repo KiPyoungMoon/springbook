@@ -42,9 +42,9 @@ public class UserDaoTest {
         //ApplicationContext context = new GenericXmlApplicationContext("./springbook/user/dao/applicationContext.xml"); // 경로 설정에 유의
         //this.userDao = context.getBean("userDao", UserDao.class);
         
-        user1 = new User("kpMoon1", "문기평", "1234", Level.BASIC, 1, 0);
-        user2 = new User("kpMoon2", "퐁2", "1234", Level.SILVER, 55, 10);
-        user3 = new User("kpMoon3", "강연3", "1234", Level.GOLD, 100, 40);
+        user1 = new User("kpMoon1", "문기평", "1234", Level.BASIC, 1, 0, "thefates82@gmail.com");
+        user2 = new User("kpMoon2", "퐁2", "1234", Level.SILVER, 55, 10, "requiem-1@hanmail.net");
+        user3 = new User("kpMoon3", "강연3", "1234", Level.GOLD, 100, 40, "mkpong0212@gmail.com");
     }
 
     User user1;
