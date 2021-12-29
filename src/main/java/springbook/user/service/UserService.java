@@ -20,7 +20,7 @@ public class UserService {
 
     protected UserDao userDao;
     protected UserLevelPolicy userLevelPolicy;
-    protected DataSource dataSource;
+    protected PlatformTransactionManager transactionManager;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
@@ -30,12 +30,11 @@ public class UserService {
         this.userLevelPolicy = userLevelPolicy;
     }
 
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
     }
 
     public void upgradeLevels() throws Exception {
-        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
         TransactionStatus transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
 
         try {
