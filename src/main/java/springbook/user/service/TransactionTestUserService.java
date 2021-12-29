@@ -35,7 +35,6 @@ public class TransactionTestUserService extends UserService {
             }
             transactionManager.commit(transactionStatus);
         } catch (Exception e) {
-            System.out.println(e);
             transactionManager.rollback(transactionStatus);
             throw e;
         }
