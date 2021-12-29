@@ -1,10 +1,11 @@
 package springbook.user.service;
 
-import java.sql.Connection;
 import java.util.List;
 
-import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import springbook.user.domain.User;
 
@@ -23,10 +24,8 @@ public class TransactionTestUserService extends UserService {
 
     @Override
     public void upgradeLevels() throws Exception {
-        TransactionSynchronizationManager.initSynchronization();
-        Connection c = DataSourceUtils.getConnection(dataSource);
-
-        c.setAutoCommit(false);
+        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
+        TransactionStatus transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
 
         try {
             List<User> userList = userDao.getAll();
@@ -37,15 +36,11 @@ public class TransactionTestUserService extends UserService {
                     userLevelPolicy.upgradeLevel(user);
                 }
             }
-            c.commit();
+            transactionManager.commit(transactionStatus);
         } catch (Exception e) {
             System.out.println(e);
-            c.rollback();
+            transactionManager.rollback(transactionStatus);
             throw e;
-        } finally {
-            DataSourceUtils.releaseConnection(c, dataSource);
-            TransactionSynchronizationManager.unbindResource(this.dataSource);
-            TransactionSynchronizationManager.clearSynchronization();
         }
     }
 }
