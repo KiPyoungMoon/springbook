@@ -2,9 +2,6 @@ package springbook.user.service;
 
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
