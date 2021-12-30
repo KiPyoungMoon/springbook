@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
 import springbook.user.domain.User;
+import springbook.user.exception.DuplicateUserIdException;
 import springbook.user.domain.Level;
 
 public class UserDaoJdbc implements UserDao {

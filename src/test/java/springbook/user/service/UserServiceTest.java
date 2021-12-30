@@ -1,11 +1,11 @@
 package springbook.user.service;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static springbook.user.service.UserService.MIN_LOGIN_COUNT_FOR_SILVER;
-import static springbook.user.service.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
+import static springbook.user.service.impl.UserService.MIN_LOGIN_COUNT_FOR_SILVER;
+import static springbook.user.service.impl.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,8 +18,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import springbook.user.dao.UserDao;
-import springbook.user.domain.User;
 import springbook.user.domain.Level;
+import springbook.user.domain.User;
+import springbook.user.exception.TestUserServiceException;
+import springbook.user.service.impl.TransactionTestUserService;
+import springbook.user.service.impl.UserService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "../../../test-applicationContext.xml")

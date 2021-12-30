@@ -14,24 +14,24 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
-    <bean id="userService" class="springbook.user.service.UserService">
+    <bean id="userService" class="springbook.user.service.impl.UserService">
         <property name="userDao" ref="userDao"></property>
         <property name="userLevelPolicy" ref="currentUserLevelPolicy"></property>
         <property name="transactionManager" ref="transactionManager"></property>
     </bean>
 
-    <bean id="currentUserLevelPolicy" class="springbook.user.service.CurrentUserLevelPolicy">
+    <bean id="currentUserLevelPolicy" class="springbook.user.service.impl.CurrentUserLevelPolicy">
         <property name="userDao" ref="userDao"></property>
         <property name="mailSender" ref="mailSender"></property>
     </bean>
 
-    <bean id="transactionTestUserService" class="springbook.user.service.TransactionTestUserService">
+    <bean id="transactionTestUserService" class="springbook.user.service.impl.TransactionTestUserService">
         <property name="userDao" ref="userDao"></property>
         <property name="userLevelPolicy" ref="transactionTestUserLevelPolicy"></property>
         <property name="transactionManager" ref="transactionManager"></property>
     </bean>
 
-    <bean id="transactionTestUserLevelPolicy" class="springbook.user.service.TransactionTestUserLevelPolicy">
+    <bean id="transactionTestUserLevelPolicy" class="springbook.user.service.impl.TransactionTestUserLevelPolicy">
         <property name="userDao" ref="userDao"></property>
     </bean>
 
@@ -39,7 +39,5 @@
         <property name="dataSource" ref="dataSource"></property>    
     </bean>
 
-    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="mail.server.com" />
-    </bean>
+    <bean id="mailSender" class="springbook.user.service.impl.DumiMailSender"></bean>
 </beans>

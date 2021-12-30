@@ -1,6 +1,7 @@
-package springbook.user.service;
+package springbook.user.service.impl;
 
 import springbook.user.domain.User;
+import springbook.user.exception.TestUserServiceException;
 
 public class TransactionTestUserLevelPolicy extends CurrentUserLevelPolicy {
     

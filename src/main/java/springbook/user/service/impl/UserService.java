@@ -1,4 +1,4 @@
-package springbook.user.service;
+package springbook.user.service.impl;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
+import springbook.user.service.UserLevelPolicy;
 import springbook.user.domain.Level;
 
 public class UserService {

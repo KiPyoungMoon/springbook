@@ -1,25 +1,26 @@
-package springbook.user.service;
+package springbook.user.service.impl;
 
-import static springbook.user.service.UserService.MIN_LOGIN_COUNT_FOR_SILVER;
-import static springbook.user.service.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
+import static springbook.user.service.impl.UserService.MIN_LOGIN_COUNT_FOR_SILVER;
+import static springbook.user.service.impl.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
+import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
+import springbook.user.service.UserLevelPolicy;
 
 public class CurrentUserLevelPolicy implements UserLevelPolicy {
     
     UserDao userDao;
-    private JavaMailSenderImpl mailSender;
+    private MailSender mailSender;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
 
-    public void setMailSender(JavaMailSenderImpl mailSender) {
+    public void setMailSender(MailSender mailSender) {
         this.mailSender = mailSender;
     }
     

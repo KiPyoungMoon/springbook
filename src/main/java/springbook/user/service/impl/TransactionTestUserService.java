@@ -1,4 +1,4 @@
-package springbook.user.service;
+package springbook.user.service.impl;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import springbook.user.domain.User;
+import springbook.user.service.UserLevelPolicy;
 
 public class TransactionTestUserService extends UserService {
     

@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 //import springbook.user.dao.DuplicateUserIdException;
 //import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
+import springbook.user.exception.DuplicateUserIdException;
 import springbook.user.domain.Level;
 
 /**
