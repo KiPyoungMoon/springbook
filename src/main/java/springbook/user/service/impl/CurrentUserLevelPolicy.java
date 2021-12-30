@@ -37,7 +37,7 @@ public class CurrentUserLevelPolicy implements UserLevelPolicy {
         mailMessage.setTo(user.getEmail());
         mailMessage.setFrom("userAdmin@ksug.org");
         mailMessage.setSubject("회원등급 Upgrade 안내");
-        mailMessage.setText(user.getName() + "님의 등급이" + user.getLevel() + "로 변경되었습니다.");
+        mailMessage.setText(user.getName() + "님의 등급이 " + user.getLevel() + "로 변경되었습니다.");
 
         this.mailSender.send(mailMessage);
     }

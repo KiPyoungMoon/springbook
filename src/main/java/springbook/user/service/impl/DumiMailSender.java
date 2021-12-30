@@ -8,12 +8,12 @@ public class DumiMailSender implements MailSender {
 
     @Override
     public void send(SimpleMailMessage simpleMessage) throws MailException {
-        simpleMessage.toString();
+        System.out.println(simpleMessage.toString());
     }
 
     @Override
     public void send(SimpleMailMessage... simpleMessages) throws MailException {
-        simpleMessages[0].toString();
+        System.out.println(simpleMessages[0].toString());
     }
     
 }
