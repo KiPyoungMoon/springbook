@@ -11,6 +11,9 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
@@ -27,24 +30,20 @@ public class CurrentUserLevelPolicy implements UserLevelPolicy {
     public void upgradeLevel(User user) {
         user.upgradeLevel();
         userDao.update(user);
-        sendEmail(user);
+        sendUpgradeEmail(user);
     }
-    
-    public void sendEmail(User user) {
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "mail.ksug.org");
-        Session session = Session.getInstance(props, null);
 
-        MimeMessage message = new MimeMessage(session);
-        try {
-            message.setFrom(new InternetAddress("userAdmin@ksug.org"));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(user.getEmail()));
-            message.setSubject("Upgrade 안내");
-            message.setText(user.getName() + "님의 등급이" + user.getLevel() + "로 변경되었습니다.");
-            Transport.send(message);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public void sendUpgradeEmail(User user) {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("mail.server.com");
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(user.getEmail());
+        mailMessage.setFrom("userAdmin@ksug.org");
+        mailMessage.setSubject("회원등급 Upgrade 안내");
+        mailMessage.setText(user.getName() + "님의 등급이" + user.getLevel() + "로 변경되었습니다.");
+
+        mailSender.send(mailMessage);
     }
 
     @Override
