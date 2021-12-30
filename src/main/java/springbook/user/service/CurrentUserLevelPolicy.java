@@ -13,9 +13,14 @@ import springbook.user.domain.User;
 public class CurrentUserLevelPolicy implements UserLevelPolicy {
     
     UserDao userDao;
+    private JavaMailSenderImpl mailSender;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    public void setMailSender(JavaMailSenderImpl mailSender) {
+        this.mailSender = mailSender;
     }
     
     @Override
@@ -26,8 +31,6 @@ public class CurrentUserLevelPolicy implements UserLevelPolicy {
     }
 
     public void sendUpgradeEmail(User user) {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("mail.server.com");
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(user.getEmail());
@@ -35,7 +38,7 @@ public class CurrentUserLevelPolicy implements UserLevelPolicy {
         mailMessage.setSubject("회원등급 Upgrade 안내");
         mailMessage.setText(user.getName() + "님의 등급이" + user.getLevel() + "로 변경되었습니다.");
 
-        mailSender.send(mailMessage);
+        this.mailSender.send(mailMessage);
     }
 
     @Override
