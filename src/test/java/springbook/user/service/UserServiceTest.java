@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import static springbook.user.service.impl.UserService.MIN_LOGIN_COUNT_FOR_SILVER;
 import static springbook.user.service.impl.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -21,7 +25,7 @@ import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.exception.TestUserServiceException;
-import springbook.user.service.impl.TransactionTestUserService;
+import springbook.user.service.impl.CurrentUserLevelPolicy;
 import springbook.user.service.impl.UserService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,8 +35,8 @@ public class UserServiceTest {
     @Autowired
     UserService userService;
 
-    @Autowired
-    TransactionTestUserService transactionTestUserService;
+    // @Autowired
+    // TransactionTestUserService transactionTestUserService;
 
     @Autowired
     UserDao userDao;
@@ -61,16 +65,20 @@ public class UserServiceTest {
     }
 
     @Test
-    public void bean3() {
-        assertNotNull(transactionTestUserService);
-    }
-
-    @Test
     public void upgradeUserLevel() throws Exception {
+        CurrentUserLevelPolicy userLevelPolicy = new CurrentUserLevelPolicy();
+        MockMailSender mockMailSender = new MockMailSender();
+        
+        userLevelPolicy.setMailSender(mockMailSender);
+        userLevelPolicy.setUserDao(userDao);
+        
+        this.userService.setUserLevelPolicy(userLevelPolicy);
+        
         userDao.deleteAll();
 
         for (User user : userList) userDao.add(user);
 
+        
         userService.upgradeLevels();
 
         this.checkUserUpgraded(userList.get(0), false);
@@ -78,6 +86,12 @@ public class UserServiceTest {
         this.checkUserUpgraded(userList.get(2), false);
         this.checkUserUpgraded(userList.get(3), true);
         this.checkUserUpgraded(userList.get(4), false);
+
+        List<String> requests = mockMailSender.getRequests();
+
+        assertThat(requests.size(), is(2));
+        assertThat(requests.get(0), is(userList.get(1).getEmail()));
+        assertThat(requests.get(1), is(userList.get(3).getEmail()));
     }
 
     private void checkUserUpgraded(User user, Boolean result) {
@@ -103,15 +117,56 @@ public class UserServiceTest {
 
     @Test
     public void upgradeAllOrNothing() throws Exception {
+        TransactionTestUserLevelPolicy userLevelPolicy = new TransactionTestUserLevelPolicy();
+        userLevelPolicy.setId(userList.get(3).getId());
+        userLevelPolicy.setUserDao(userDao);
+        this.userService.setUserLevelPolicy(userLevelPolicy);
+        
         userDao.deleteAll();
         for (User user : userList) userDao.add(user);
 
-        transactionTestUserService.setId(userList.get(3).getId());
-        
         try {
-            transactionTestUserService.upgradeLevels();
+            this.userService.upgradeLevels();
             fail("TestUserServiceException Expected.");
         } catch (TestUserServiceException e) {}
         this.checkUserUpgraded(userList.get(1), false);
+    }
+
+    static class MockMailSender implements MailSender {
+
+        private List<String> request = new ArrayList<String>();
+
+        public List<String> getRequests() {
+            return this.request;
+        }
+
+        @Override
+        public void send(SimpleMailMessage simpleMessage) throws MailException {
+            this.request.add(simpleMessage.getTo()[0]);
+        }
+
+        @Override
+        public void send(SimpleMailMessage... simpleMessages) throws MailException {
+            for (SimpleMailMessage simpleMailMessage : simpleMessages) {
+                this.request.add(simpleMailMessage.getTo()[0]);    
+            }
+        }
+
+    }
+
+    static public class TransactionTestUserLevelPolicy extends CurrentUserLevelPolicy {
+    
+        private String id;
+    
+        public void setId(String id) {
+            this.id = id;
+        }
+    
+        @Override
+        public void upgradeLevel(User user) {
+            if (user.getId().equals(this.id)) throw new TestUserServiceException();
+            user.upgradeLevel();
+            this.userDao.update(user);
+        }
     }
 }

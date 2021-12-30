@@ -25,16 +25,6 @@
         <property name="mailSender" ref="mailSender"></property>
     </bean>
 
-    <bean id="transactionTestUserService" class="springbook.user.service.impl.TransactionTestUserService">
-        <property name="userDao" ref="userDao"></property>
-        <property name="userLevelPolicy" ref="transactionTestUserLevelPolicy"></property>
-        <property name="transactionManager" ref="transactionManager"></property>
-    </bean>
-
-    <bean id="transactionTestUserLevelPolicy" class="springbook.user.service.impl.TransactionTestUserLevelPolicy">
-        <property name="userDao" ref="userDao"></property>
-    </bean>
-
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"></property>    
     </bean>

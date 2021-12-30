@@ -13,7 +13,7 @@ import springbook.user.service.UserLevelPolicy;
 
 public class CurrentUserLevelPolicy implements UserLevelPolicy {
     
-    UserDao userDao;
+    protected UserDao userDao;
     private MailSender mailSender;
 
     public void setUserDao(UserDao userDao) {
