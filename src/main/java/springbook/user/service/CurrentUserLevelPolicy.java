@@ -3,14 +3,6 @@ package springbook.user.service;
 import static springbook.user.service.UserService.MIN_LOGIN_COUNT_FOR_SILVER;
 import static springbook.user.service.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
-import java.util.Properties;
-
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
