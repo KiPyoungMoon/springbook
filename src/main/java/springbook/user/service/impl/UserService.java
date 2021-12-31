@@ -36,18 +36,22 @@ public class UserService {
         TransactionStatus transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
 
         try {
-            List<User> userList = userDao.getAll();
-    
-            for (User user : userList) {
-                Boolean canUpgrade = userLevelPolicy.canUpgradeLevel(user);
-                if ( Boolean.TRUE.equals(canUpgrade) ) {
-                    userLevelPolicy.upgradeLevel(user);
-                }
-            }
+            upgradeLevelsInternal();
             transactionManager.commit(transactionStatus);
         } catch (Exception e) {
             transactionManager.rollback(transactionStatus);
             throw e;
+        }
+    }
+
+    private void upgradeLevelsInternal() {
+        List<User> userList = userDao.getAll();
+   
+        for (User user : userList) {
+            Boolean canUpgrade = userLevelPolicy.canUpgradeLevel(user);
+            if ( Boolean.TRUE.equals(canUpgrade) ) {
+                userLevelPolicy.upgradeLevel(user);
+            }
         }
     }
 
