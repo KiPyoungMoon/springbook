@@ -36,7 +36,7 @@ public class UserServiceTxImpl implements UserService {
             this.transactionManager.rollback(transactionStatus);
             throw e;
         }
-        
+
     }
-    
+
 }

@@ -32,7 +32,7 @@ import springbook.user.service.impl.UserServiceTxImpl;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "../../../test-applicationContext.xml")
 public class UserServiceTest {
-    
+
     @Autowired
     UserServiceTxImpl userService;
 
@@ -58,12 +58,13 @@ public class UserServiceTest {
 
     private void setTestUsersInfo() {
         this.userList = Arrays.asList(
-            new User("mkp", "문기평", "1234", Level.BASIC, MIN_LOGIN_COUNT_FOR_SILVER - 1, 0, "thefates82@gmail.com"),
-            new User("mkp2", "문기평2", "1234", Level.BASIC, MIN_LOGIN_COUNT_FOR_SILVER, 0, "requiem-1@hanmail.net"),
-            new User("mkp3", "문기평3", "1234", Level.SILVER, MIN_LOGIN_COUNT_FOR_SILVER + 10, MIN_RECOMMAND_COUNT_FOR_GOLD - 1, "mkpong0212@gmail.com"),
-            new User("mkp4", "문기평4", "1234", Level.SILVER, MIN_LOGIN_COUNT_FOR_SILVER + 10, MIN_RECOMMAND_COUNT_FOR_GOLD, null),
-            new User("mkp5", "문기평5", "1234", Level.GOLD, MIN_LOGIN_COUNT_FOR_SILVER + 50, Integer.MAX_VALUE, "")
-        );
+                new User("mkp", "문기평", "1234", Level.BASIC, MIN_LOGIN_COUNT_FOR_SILVER - 1, 0, "thefates82@gmail.com"),
+                new User("mkp2", "문기평2", "1234", Level.BASIC, MIN_LOGIN_COUNT_FOR_SILVER, 0, "requiem-1@hanmail.net"),
+                new User("mkp3", "문기평3", "1234", Level.SILVER, MIN_LOGIN_COUNT_FOR_SILVER + 10,
+                        MIN_RECOMMAND_COUNT_FOR_GOLD - 1, "mkpong0212@gmail.com"),
+                new User("mkp4", "문기평4", "1234", Level.SILVER, MIN_LOGIN_COUNT_FOR_SILVER + 10,
+                        MIN_RECOMMAND_COUNT_FOR_GOLD, null),
+                new User("mkp5", "문기평5", "1234", Level.GOLD, MIN_LOGIN_COUNT_FOR_SILVER + 50, Integer.MAX_VALUE, ""));
     }
 
     private void setMockMailDependencyInjection() {
@@ -86,9 +87,9 @@ public class UserServiceTest {
     public void upgradeUserLevel() throws Exception {
         userDao.deleteAll();
 
-        for (User user : userList) userDao.add(user);
+        for (User user : userList)
+            userDao.add(user);
 
-        
         userService.upgradeLevels();
 
         this.checkUserUpgraded(userList.get(0), false);
@@ -106,8 +107,10 @@ public class UserServiceTest {
 
     private void checkUserUpgraded(User user, Boolean result) {
         User targetUser = userDao.get(user.getId());
-        if ( Boolean.TRUE.equals( result )) assertThat(targetUser.getLevel(), is(user.getLevel().nextLevel()));
-        else assertThat(targetUser.getLevel(), is(user.getLevel()));
+        if (Boolean.TRUE.equals(result))
+            assertThat(targetUser.getLevel(), is(user.getLevel().nextLevel()));
+        else
+            assertThat(targetUser.getLevel(), is(user.getLevel()));
     }
 
     @Test
@@ -132,14 +135,16 @@ public class UserServiceTest {
         userLevelPolicy.setUserDao(userDao);
         this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
         this.userService.setUserService(this.userServiceImpl);
-        
+
         userDao.deleteAll();
-        for (User user : userList) userDao.add(user);
+        for (User user : userList)
+            userDao.add(user);
 
         try {
             this.userService.upgradeLevels();
             fail("TestUserServiceException Expected.");
-        } catch (TestUserServiceException e) {}
+        } catch (TestUserServiceException e) {
+        }
         this.checkUserUpgraded(userList.get(1), false);
     }
 
@@ -159,23 +164,24 @@ public class UserServiceTest {
         @Override
         public void send(SimpleMailMessage... simpleMessages) throws MailException {
             for (SimpleMailMessage simpleMailMessage : simpleMessages) {
-                this.request.add(simpleMailMessage.getTo()[0]);    
+                this.request.add(simpleMailMessage.getTo()[0]);
             }
         }
 
     }
 
     static public class TransactionTestUserLevelPolicy extends CurrentUserLevelPolicy {
-    
+
         private String id;
-    
+
         public void setId(String id) {
             this.id = id;
         }
-    
+
         @Override
         public void upgradeLevel(User user) {
-            if (user.getId().equals(this.id)) throw new TestUserServiceException();
+            if (user.getId().equals(this.id))
+                throw new TestUserServiceException();
             user.upgradeLevel();
             this.userDao.update(user);
         }

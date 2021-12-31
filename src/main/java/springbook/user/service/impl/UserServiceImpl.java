@@ -11,7 +11,7 @@ import springbook.user.service.UserService;
 import springbook.user.domain.Level;
 
 public class UserServiceImpl implements UserService {
-    
+
     public static final int MIN_LOGIN_COUNT_FOR_SILVER = 50;
     public static final int MIN_RECOMMAND_COUNT_FOR_GOLD = 30;
 
@@ -30,14 +30,14 @@ public class UserServiceImpl implements UserService {
     public void setTransactionManager(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
-    
+
     @Override
     public void upgradeLevels() {
         List<User> userList = userDao.getAll();
-   
+
         for (User user : userList) {
             Boolean canUpgrade = userLevelPolicy.canUpgradeLevel(user);
-            if ( Boolean.TRUE.equals(canUpgrade) ) {
+            if (Boolean.TRUE.equals(canUpgrade)) {
                 userLevelPolicy.upgradeLevel(user);
             }
         }
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void add(User user) {
-        if ( user.getLevel() == null ) {
+        if (user.getLevel() == null) {
             user.setLevel(Level.BASIC);
         }
         userDao.add(user);
