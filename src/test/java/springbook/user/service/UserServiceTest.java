@@ -27,31 +27,50 @@ import springbook.user.domain.User;
 import springbook.user.exception.TestUserServiceException;
 import springbook.user.service.impl.CurrentUserLevelPolicy;
 import springbook.user.service.impl.UserServiceImpl;
+import springbook.user.service.impl.UserServiceTxImpl;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "../../../test-applicationContext.xml")
 public class UserServiceTest {
     
     @Autowired
-    UserServiceImpl userService;
+    UserServiceTxImpl userService;
 
-    // @Autowired
-    // TransactionTestUserService transactionTestUserService;
+    @Autowired
+    UserServiceImpl userServiceImpl;
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    CurrentUserLevelPolicy userLevelPolicy;
+
+    MockMailSender mockMailSender;
 
     List<User> userList;
 
     @Before
     public void setUp() {
-        userList = Arrays.asList(
+        this.setTestUsersInfo();
+        this.setMockMailDependencyInjection();
+        // 테스트는 실제 email을 발송할 필요가 없어 항상 mockObject를 사용하도록 DI 변경.
+    }
+
+    private void setTestUsersInfo() {
+        this.userList = Arrays.asList(
             new User("mkp", "문기평", "1234", Level.BASIC, MIN_LOGIN_COUNT_FOR_SILVER - 1, 0, "thefates82@gmail.com"),
             new User("mkp2", "문기평2", "1234", Level.BASIC, MIN_LOGIN_COUNT_FOR_SILVER, 0, "requiem-1@hanmail.net"),
             new User("mkp3", "문기평3", "1234", Level.SILVER, MIN_LOGIN_COUNT_FOR_SILVER + 10, MIN_RECOMMAND_COUNT_FOR_GOLD - 1, "mkpong0212@gmail.com"),
             new User("mkp4", "문기평4", "1234", Level.SILVER, MIN_LOGIN_COUNT_FOR_SILVER + 10, MIN_RECOMMAND_COUNT_FOR_GOLD, null),
             new User("mkp5", "문기평5", "1234", Level.GOLD, MIN_LOGIN_COUNT_FOR_SILVER + 50, Integer.MAX_VALUE, "")
         );
+    }
+
+    private void setMockMailDependencyInjection() {
+        this.mockMailSender = new MockMailSender();
+        this.userLevelPolicy.setMailSender(mockMailSender);
+        this.userLevelPolicy.setUserDao(userDao);
+        this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
     }
 
     @Test
@@ -66,14 +85,6 @@ public class UserServiceTest {
 
     @Test
     public void upgradeUserLevel() throws Exception {
-        CurrentUserLevelPolicy userLevelPolicy = new CurrentUserLevelPolicy();
-        MockMailSender mockMailSender = new MockMailSender();
-        
-        userLevelPolicy.setMailSender(mockMailSender);
-        userLevelPolicy.setUserDao(userDao);
-        
-        this.userService.setUserLevelPolicy(userLevelPolicy);
-        
         userDao.deleteAll();
 
         for (User user : userList) userDao.add(user);
@@ -108,8 +119,8 @@ public class UserServiceTest {
         User userNoLevel = userList.get(0);
         userNoLevel.setLevel(null);
 
-        userService.add(userAlreadyGetLevel);
-        userService.add(userNoLevel);
+        this.userService.add(userAlreadyGetLevel);
+        this.userService.add(userNoLevel);
 
         this.checkUserUpgraded(userAlreadyGetLevel, false);
         assertThat(userNoLevel.getLevel(), is(Level.BASIC));
@@ -120,7 +131,8 @@ public class UserServiceTest {
         TransactionTestUserLevelPolicy userLevelPolicy = new TransactionTestUserLevelPolicy();
         userLevelPolicy.setId(userList.get(3).getId());
         userLevelPolicy.setUserDao(userDao);
-        this.userService.setUserLevelPolicy(userLevelPolicy);
+        this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
+        this.userService.setUserService(this.userServiceImpl);
         
         userDao.deleteAll();
         for (User user : userList) userDao.add(user);

@@ -3,8 +3,6 @@ package springbook.user.service.impl;
 import java.util.List;
 
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
@@ -35,18 +33,6 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public void upgradeLevels() {
-        TransactionStatus transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
-
-        try {
-            upgradeLevelsInternal();
-            transactionManager.commit(transactionStatus);
-        } catch (Exception e) {
-            transactionManager.rollback(transactionStatus);
-            throw e;
-        }
-    }
-
-    private void upgradeLevelsInternal() {
         List<User> userList = userDao.getAll();
    
         for (User user : userList) {
