@@ -9,9 +9,10 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.service.UserLevelPolicy;
+import springbook.user.service.UserService;
 import springbook.user.domain.Level;
 
-public class UserService {
+public class UserServiceImpl implements UserService {
     
     public static final int MIN_LOGIN_COUNT_FOR_SILVER = 50;
     public static final int MIN_RECOMMAND_COUNT_FOR_GOLD = 30;
@@ -31,8 +32,9 @@ public class UserService {
     public void setTransactionManager(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
-
-    public void upgradeLevels() throws Exception {
+    
+    @Override
+    public void upgradeLevels() {
         TransactionStatus transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
 
         try {
@@ -55,6 +57,7 @@ public class UserService {
         }
     }
 
+    @Override
     public void add(User user) {
         if ( user.getLevel() == null ) {
             user.setLevel(Level.BASIC);

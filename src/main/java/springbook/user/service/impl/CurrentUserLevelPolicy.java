@@ -1,7 +1,7 @@
 package springbook.user.service.impl;
 
-import static springbook.user.service.impl.UserService.MIN_LOGIN_COUNT_FOR_SILVER;
-import static springbook.user.service.impl.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
+import static springbook.user.service.impl.UserServiceImpl.MIN_LOGIN_COUNT_FOR_SILVER;
+import static springbook.user.service.impl.UserServiceImpl.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;

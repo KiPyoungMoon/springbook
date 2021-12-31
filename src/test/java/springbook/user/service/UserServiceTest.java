@@ -4,8 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static springbook.user.service.impl.UserService.MIN_LOGIN_COUNT_FOR_SILVER;
-import static springbook.user.service.impl.UserService.MIN_RECOMMAND_COUNT_FOR_GOLD;
+import static springbook.user.service.impl.UserServiceImpl.MIN_LOGIN_COUNT_FOR_SILVER;
+import static springbook.user.service.impl.UserServiceImpl.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,14 +26,14 @@ import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.exception.TestUserServiceException;
 import springbook.user.service.impl.CurrentUserLevelPolicy;
-import springbook.user.service.impl.UserService;
+import springbook.user.service.impl.UserServiceImpl;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "../../../test-applicationContext.xml")
 public class UserServiceTest {
     
     @Autowired
-    UserService userService;
+    UserServiceImpl userService;
 
     // @Autowired
     // TransactionTestUserService transactionTestUserService;
