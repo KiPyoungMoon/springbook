@@ -69,7 +69,6 @@ public class UserServiceTest {
     private void setMockMailDependencyInjection() {
         this.mockMailSender = new MockMailSender();
         this.userLevelPolicy.setMailSender(mockMailSender);
-        this.userLevelPolicy.setUserDao(userDao);
         this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
     }
 

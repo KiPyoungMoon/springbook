@@ -22,7 +22,6 @@
     <bean id="userServiceImpl" class="springbook.user.service.impl.UserServiceImpl">
         <property name="userDao" ref="userDao"></property>
         <property name="userLevelPolicy" ref="currentUserLevelPolicy"></property>
-        
     </bean>
 
     <bean id="currentUserLevelPolicy" class="springbook.user.service.impl.CurrentUserLevelPolicy">
