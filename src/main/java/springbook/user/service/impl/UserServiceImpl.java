@@ -2,8 +2,6 @@ package springbook.user.service.impl;
 
 import java.util.List;
 
-import org.springframework.transaction.PlatformTransactionManager;
-
 import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 import springbook.user.service.UserLevelPolicy;
@@ -17,7 +15,6 @@ public class UserServiceImpl implements UserService {
 
     protected UserDao userDao;
     protected UserLevelPolicy userLevelPolicy;
-    protected PlatformTransactionManager transactionManager;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
@@ -27,9 +24,6 @@ public class UserServiceImpl implements UserService {
         this.userLevelPolicy = userLevelPolicy;
     }
 
-    public void setTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-    }
 
     @Override
     public void upgradeLevels() {
