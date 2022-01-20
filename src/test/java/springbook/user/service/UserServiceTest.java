@@ -113,14 +113,6 @@ public class UserServiceTest {
         assertThat(updatedUser.getLevel(), is(expectedLevel));
     }
 
-    private void checkUserUpgraded(User user, Boolean result) {
-        User targetUser = userDao.get(user.getId());
-        if (Boolean.TRUE.equals(result))
-            assertThat(targetUser.getLevel(), is(user.getLevel().nextLevel()));
-        else
-            assertThat(targetUser.getLevel(), is(user.getLevel()));
-    }
-
     @Test
     public void add() {
         userDao.deleteAll();
@@ -135,6 +127,14 @@ public class UserServiceTest {
         this.checkUserUpgraded(userAlreadyGetLevel, false);
 
         assertThat(userNoLevel.getLevel(), is(Level.BASIC));
+    }
+
+    private void checkUserUpgraded(User user, Boolean result) {
+        User targetUser = userDao.get(user.getId());
+        if (Boolean.TRUE.equals(result))
+            assertThat(targetUser.getLevel(), is(user.getLevel().nextLevel()));
+        else
+            assertThat(targetUser.getLevel(), is(user.getLevel()));
     }
 
     @Test
