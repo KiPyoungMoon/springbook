@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import static springbook.user.service.impl.UserServiceImpl.MIN_LOGIN_COUNT_FOR_SILVER;
 import static springbook.user.service.impl.UserServiceImpl.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,8 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
-import org.springframework.mail.MailMessage;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
@@ -53,8 +50,6 @@ public class UserServiceTest {
 
     @Autowired
     CurrentUserLevelPolicy userLevelPolicy;
-
-    MockMailSender mockMailSender;
 
     List<User> userList;
 
@@ -112,7 +107,7 @@ public class UserServiceTest {
         
         verify(mockMailSender, times(2)).send(mailMessageArgumentCaptor.capture());
         List<SimpleMailMessage> mailMessages = mailMessageArgumentCaptor.getAllValues();
-        
+
         assertThat(mailMessages.get(0).getTo()[0], is(this.userList.get(1).getEmail()));
         assertThat(mailMessages.get(1).getTo()[0], is(this.userList.get(3).getEmail()));
     }
@@ -159,28 +154,6 @@ public class UserServiceTest {
         } catch (TestUserServiceException e) {
         }
         this.checkUserUpgraded(userList.get(1), false);
-    }
-
-    static class MockMailSender implements MailSender {
-
-        private List<String> request = new ArrayList<String>();
-
-        public List<String> getRequests() {
-            return this.request;
-        }
-
-        @Override
-        public void send(SimpleMailMessage simpleMessage) throws MailException {
-            this.request.add(simpleMessage.getTo()[0]);
-        }
-
-        @Override
-        public void send(SimpleMailMessage... simpleMessages) throws MailException {
-            for (SimpleMailMessage simpleMailMessage : simpleMessages) {
-                this.request.add(simpleMailMessage.getTo()[0]);
-            }
-        }
-
     }
 
     static public class TransactionTestUserLevelPolicy extends CurrentUserLevelPolicy {
