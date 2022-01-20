@@ -23,7 +23,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import springbook.user.dao.UserDao;
-import springbook.user.dao.UserDaoJdbc;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.exception.TestUserServiceException;
@@ -134,7 +133,7 @@ public class UserServiceTest {
         this.userService.add(userNoLevel);
 
         this.checkUserUpgraded(userAlreadyGetLevel, false);
-        
+
         assertThat(userNoLevel.getLevel(), is(Level.BASIC));
     }
 
