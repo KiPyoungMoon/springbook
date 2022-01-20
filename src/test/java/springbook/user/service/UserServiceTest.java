@@ -4,6 +4,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static springbook.user.service.impl.UserServiceImpl.MIN_LOGIN_COUNT_FOR_SILVER;
 import static springbook.user.service.impl.UserServiceImpl.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
@@ -14,8 +19,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
+import org.springframework.mail.MailMessage;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
@@ -29,6 +36,7 @@ import springbook.user.exception.TestUserServiceException;
 import springbook.user.service.impl.CurrentUserLevelPolicy;
 import springbook.user.service.impl.UserServiceImpl;
 import springbook.user.service.impl.UserServiceTxImpl;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "../../../test-applicationContext.xml")
@@ -53,8 +61,6 @@ public class UserServiceTest {
     @Before
     public void setUp() {
         this.setTestUsersInfo();
-        this.setMockMailDependencyInjection();
-        // 테스트는 실제 email을 발송할 필요가 없어 항상 mockObject를 사용하도록 DI 변경.
     }
 
     private void setTestUsersInfo() {
@@ -66,12 +72,6 @@ public class UserServiceTest {
                 new User("mkp4", "문기평4", "1234", Level.SILVER, MIN_LOGIN_COUNT_FOR_SILVER + 10,
                         MIN_RECOMMAND_COUNT_FOR_GOLD, null),
                 new User("mkp5", "문기평5", "1234", Level.GOLD, MIN_LOGIN_COUNT_FOR_SILVER + 50, Integer.MAX_VALUE, ""));
-    }
-
-    private void setMockMailDependencyInjection() {
-        this.mockMailSender = new MockMailSender();
-        this.userLevelPolicy.setMailSender(mockMailSender);
-        this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
     }
 
     @Test
@@ -88,29 +88,33 @@ public class UserServiceTest {
     @Test
     public void upgradeUserLevel() throws Exception {
         UserServiceImpl userService = new UserServiceImpl();
-        MockUserDao userDao = new MockUserDao(this.userList);
+        UserDao mockUserDao = mock(UserDao.class);
+        MailSender mockMailSender = mock(MailSender.class);
 
-        userService.setUserDao(userDao);
-        this.userLevelPolicy.setUserDao(userDao);
+        this.userLevelPolicy.setMailSender(mockMailSender);
+        this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
+
+        when(mockUserDao.getAll()).thenReturn(this.userList);
+
+        userService.setUserDao(mockUserDao);
+        this.userLevelPolicy.setUserDao(mockUserDao);
         userService.setUserLevelPolicy(this.userLevelPolicy);
 
         userService.upgradeLevels();
-        List<User> updateUsers = userDao.getUpdatedUsers();
 
-        assertThat(updateUsers.size(), is(2));
-        this.checkUserAndLevel(this.userList.get(1), "mkp2", Level.SILVER);
-        this.checkUserAndLevel(this.userList.get(3), "mkp4", Level.GOLD);
+        verify(mockUserDao, times(2)).update(any(User.class));
+        verify(mockUserDao).update(this.userList.get(1));
+        assertThat(this.userList.get(1).getLevel(), is(Level.SILVER));
+        verify(mockUserDao).update(this.userList.get(3));
+        assertThat(this.userList.get(3).getLevel(), is(Level.GOLD));
 
-        List<String> requests = mockMailSender.getRequests();
-
-        assertThat(requests.size(), is(2));
-        assertThat(requests.get(0), is(userList.get(1).getEmail()));
-        assertThat(requests.get(1), is(userList.get(3).getEmail()));
-    }
-
-    private void checkUserAndLevel(User updatedUser, String expectedId, Level expectedLevel) {
-        assertThat(updatedUser.getId(), is(expectedId));
-        assertThat(updatedUser.getLevel(), is(expectedLevel));
+        ArgumentCaptor<SimpleMailMessage> mailMessageArgumentCaptor = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        
+        verify(mockMailSender, times(2)).send(mailMessageArgumentCaptor.capture());
+        List<SimpleMailMessage> mailMessages = mailMessageArgumentCaptor.getAllValues();
+        
+        assertThat(mailMessages.get(0).getTo()[0], is(this.userList.get(1).getEmail()));
+        assertThat(mailMessages.get(1).getTo()[0], is(this.userList.get(3).getEmail()));
     }
 
     @Test
@@ -194,50 +198,5 @@ public class UserServiceTest {
             user.upgradeLevel();
             this.userDao.update(user);
         }
-    }
-
-    static public class MockUserDao implements UserDao {
-        
-        private List<User> users;
-        private List<User> updatedUsers = new ArrayList<User>();
-
-        public MockUserDao(List<User> users) {
-            this.users = users;
-        }
-
-        public List<User> getUpdatedUsers() {
-            return this.updatedUsers;
-        }
-
-        @Override
-        public List<User> getAll() {
-            return  this.users;
-        }
-
-        @Override
-        public void update(User user) {
-            this.updatedUsers.add(user);
-        }
-        
-        @Override
-        public void deleteAll() {
-            throw new UnsupportedOperationException();
-        }
-        
-        @Override
-        public void add(User user) {
-            throw new UnsupportedOperationException();
-        }
-        
-        @Override
-        public User get(String id) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int getCount() {
-            throw new UnsupportedOperationException();
-        }
-        
     }
 }
