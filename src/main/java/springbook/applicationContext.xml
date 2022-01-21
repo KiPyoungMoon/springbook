@@ -14,7 +14,14 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
-    <bean id="userService" class="springbook.user.service.impl.UserServiceImpl">
+    <bean id="userService" class="springbook.proxy.TransactionProxyFactoryBean">
+        <property name="target" ref="userServiceImpl"></property>
+        <property name="transactionManager" ref="transactionManager"></property>
+        <property name="pattern" value="upgradeLevel"></property>
+        <property name="serviceInterface" value="springbook.user.service.UserService"></property>
+    </bean>
+    
+    <bean id="userServiceImpl" class="springbook.user.service.impl.UserServiceImpl">
         <property name="userDao" ref="userDao"></property>
         <property name="userLevelPolicy" ref="currentUserLevelPolicy"></property>
     </bean>

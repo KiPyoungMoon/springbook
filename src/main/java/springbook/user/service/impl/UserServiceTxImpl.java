@@ -4,7 +4,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
+import springbook.user.service.UserLevelPolicy;
 import springbook.user.service.UserService;
 
 public class UserServiceTxImpl implements UserService {
@@ -39,4 +41,15 @@ public class UserServiceTxImpl implements UserService {
 
     }
 
+    @Override
+    public void setUserLevelPolicy(UserLevelPolicy userLevelPolicy) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setUserDao(UserDao userDao) {
+        throw new UnsupportedOperationException();
+    }
+
+    
 }

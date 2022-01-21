@@ -16,14 +16,15 @@ public class UserServiceImpl implements UserService {
     protected UserDao userDao;
     protected UserLevelPolicy userLevelPolicy;
 
+    @Override
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
 
+    @Override
     public void setUserLevelPolicy(UserLevelPolicy userLevelPolicy) {
         this.userLevelPolicy = userLevelPolicy;
     }
-
 
     @Override
     public void upgradeLevels() {

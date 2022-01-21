@@ -20,7 +20,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
@@ -29,6 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import springbook.proxy.TransactionHandler;
+import springbook.proxy.TransactionProxyFactoryBean;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
@@ -56,6 +59,9 @@ public class UserServiceTest {
 
     @Autowired
     PlatformTransactionManager transactionManager;
+
+    @Autowired
+    ApplicationContext context;
 
     List<User> userList;
 
@@ -85,23 +91,23 @@ public class UserServiceTest {
         assertNotNull(userDao);
     }
 
-    @DirtiesContext
     @Test
+    @DirtiesContext
     public void upgradeUserLevel() throws Exception {
-        UserServiceImpl userService = new UserServiceImpl();
         UserDao mockUserDao = mock(UserDao.class);
         MailSender mockMailSender = mock(MailSender.class);
-
-        this.userLevelPolicy.setMailSender(mockMailSender);
-        this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
-
         when(mockUserDao.getAll()).thenReturn(this.userList);
+        this.userLevelPolicy.setMailSender(mockMailSender);
 
-        userService.setUserDao(mockUserDao);
+        TransactionProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TransactionProxyFactoryBean.class);
+        txProxyFactoryBean.setTarget(userServiceImpl);
+        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
+
+        txUserService.setUserDao(mockUserDao);
         this.userLevelPolicy.setUserDao(mockUserDao);
-        userService.setUserLevelPolicy(this.userLevelPolicy);
+        txUserService.setUserLevelPolicy(this.userLevelPolicy);
 
-        userService.upgradeLevels();
+        txUserService.upgradeLevels();
 
         verify(mockUserDao, times(2)).update(any(User.class));
         verify(mockUserDao).update(this.userList.get(1));
@@ -143,22 +149,18 @@ public class UserServiceTest {
     }
 
     @Test
+    @DirtiesContext
     public void upgradeAllOrNothing() throws Exception {
         TransactionTestUserLevelPolicy userLevelPolicy = new TransactionTestUserLevelPolicy();
         userLevelPolicy.setId(userList.get(3).getId());
         userLevelPolicy.setUserDao(userDao);
         this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
-        this.userService = this.userServiceImpl;
+        
+        TransactionProxyFactoryBean transactionProxyFactoryBean = context.getBean("&userService", TransactionProxyFactoryBean.class);
+        UserService txUserService = (UserService) transactionProxyFactoryBean.getObject();
+        txUserService.setUserDao(userDao);
+        txUserService.setUserLevelPolicy(userLevelPolicy);
 
-        TransactionHandler txHandler = new TransactionHandler();
-        txHandler.setPattern("upgradeLevels");
-        txHandler.setTarget(this.userService);
-        txHandler.setTransactionManager(transactionManager);
-
-        UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {UserService.class}, txHandler);
-        /*
-         * userSErviceTxImpl 제거, reflect로 범용 트랜젝션 핸들러 구현. 
-         */
         userDao.deleteAll();
         for (User user : userList)
             userDao.add(user);
