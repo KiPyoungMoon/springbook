@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import static springbook.user.service.impl.UserServiceImpl.MIN_LOGIN_COUNT_FOR_SILVER;
 import static springbook.user.service.impl.UserServiceImpl.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,7 +26,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
 
+import springbook.proxy.TransactionHandler;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
@@ -40,7 +43,7 @@ import springbook.user.service.impl.UserServiceTxImpl;
 public class UserServiceTest {
 
     @Autowired
-    UserServiceTxImpl userService;
+    UserService userService;
 
     @Autowired
     UserServiceImpl userServiceImpl;
@@ -50,6 +53,9 @@ public class UserServiceTest {
 
     @Autowired
     CurrentUserLevelPolicy userLevelPolicy;
+
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     List<User> userList;
 
@@ -142,14 +148,23 @@ public class UserServiceTest {
         userLevelPolicy.setId(userList.get(3).getId());
         userLevelPolicy.setUserDao(userDao);
         this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
-        this.userService.setUserService(this.userServiceImpl);
+        this.userService = this.userServiceImpl;
 
+        TransactionHandler txHandler = new TransactionHandler();
+        txHandler.setPattern("upgradeLevels");
+        txHandler.setTarget(this.userService);
+        txHandler.setTransactionManager(transactionManager);
+
+        UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {UserService.class}, txHandler);
+        /*
+         * userSErviceTxImpl 제거, reflect로 범용 트랜젝션 핸들러 구현. 
+         */
         userDao.deleteAll();
         for (User user : userList)
             userDao.add(user);
 
         try {
-            this.userService.upgradeLevels();
+            txUserService.upgradeLevels();
             fail("TestUserServiceException Expected.");
         } catch (TestUserServiceException e) {
         }
