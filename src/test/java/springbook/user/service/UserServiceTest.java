@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import static springbook.user.service.impl.UserServiceImpl.MIN_LOGIN_COUNT_FOR_SILVER;
 import static springbook.user.service.impl.UserServiceImpl.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
-import java.lang.reflect.Proxy;
+// import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
@@ -30,7 +29,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import springbook.proxy.TransactionHandler;
 import springbook.proxy.TransactionProxyFactoryBean;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
@@ -38,7 +36,6 @@ import springbook.user.domain.User;
 import springbook.user.exception.TestUserServiceException;
 import springbook.user.service.impl.CurrentUserLevelPolicy;
 import springbook.user.service.impl.UserServiceImpl;
-import springbook.user.service.impl.UserServiceTxImpl;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
