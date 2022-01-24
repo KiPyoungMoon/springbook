@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
@@ -29,13 +28,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import springbook.proxy.TransactionProxyFactoryBean;
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.exception.TestUserServiceException;
 import springbook.user.service.impl.CurrentUserLevelPolicy;
-import springbook.user.service.impl.UserServiceImpl;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,9 +41,6 @@ public class UserServiceTest {
 
     @Autowired
     UserService userService;
-
-    @Autowired
-    UserServiceImpl userServiceImpl;
 
     @Autowired
     UserDao userDao;
@@ -96,15 +90,11 @@ public class UserServiceTest {
         when(mockUserDao.getAll()).thenReturn(this.userList);
         this.userLevelPolicy.setMailSender(mockMailSender);
 
-        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-        txProxyFactoryBean.setTarget(userServiceImpl);
-        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-
-        txUserService.setUserDao(mockUserDao);
+        userService.setUserDao(mockUserDao);
         this.userLevelPolicy.setUserDao(mockUserDao);
-        txUserService.setUserLevelPolicy(this.userLevelPolicy);
+        userService.setUserLevelPolicy(this.userLevelPolicy);
 
-        txUserService.upgradeLevels();
+        userService.upgradeLevels();
 
         verify(mockUserDao, times(2)).update(any(User.class));
         verify(mockUserDao).update(this.userList.get(1));
@@ -151,19 +141,14 @@ public class UserServiceTest {
         TransactionTestUserLevelPolicy userLevelPolicy = new TransactionTestUserLevelPolicy();
         userLevelPolicy.setId(userList.get(3).getId());
         userLevelPolicy.setUserDao(userDao);
-        this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
-        
-        ProxyFactoryBean transactionProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-        UserService txUserService = (UserService) transactionProxyFactoryBean.getObject();
-        txUserService.setUserDao(userDao);
-        txUserService.setUserLevelPolicy(userLevelPolicy);
+        userService.setUserLevelPolicy(userLevelPolicy);
 
         userDao.deleteAll();
         for (User user : userList)
             userDao.add(user);
 
         try {
-            txUserService.upgradeLevels();
+            userService.upgradeLevels();
             fail("TestUserServiceException Expected.");
         } catch (TestUserServiceException e) {
         }

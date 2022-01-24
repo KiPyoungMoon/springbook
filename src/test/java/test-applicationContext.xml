@@ -14,21 +14,13 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
-    <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="userServiceImpl"></property>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionAdvisor</value>
-            </list>
-        </property>
-    </bean>
-
     <bean id="transactionAdvice" class="springbook.proxy.TranscationAdvice">
         <property name="transactionManager" ref="transactionManager"></property>
     </bean>
 
-    <bean id="transactioPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+    <bean id="transactioPointcut" class="springbook.proxy.NameMatchClassMethodPointcut">
         <property name="mappedName" value="upgrade*"></property>
+        <property name="mappedClassName" value="*ServiceImpl"></property>
     </bean>
 
     <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
@@ -36,7 +28,9 @@
         <property name="pointcut" ref="transactioPointcut"></property>
     </bean>
 
-    <bean id="userServiceImpl" class="springbook.user.service.impl.UserServiceImpl">
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
+
+    <bean id="userService" class="springbook.user.service.impl.UserServiceImpl">
         <property name="userDao" ref="userDao"></property>
         <property name="userLevelPolicy" ref="currentUserLevelPolicy"></property>
     </bean>
