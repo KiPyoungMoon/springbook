@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import static springbook.user.service.impl.UserServiceImpl.MIN_LOGIN_COUNT_FOR_SILVER;
 import static springbook.user.service.impl.UserServiceImpl.MIN_RECOMMAND_COUNT_FOR_GOLD;
 
-// import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
@@ -96,7 +96,7 @@ public class UserServiceTest {
         when(mockUserDao.getAll()).thenReturn(this.userList);
         this.userLevelPolicy.setMailSender(mockMailSender);
 
-        TransactionProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TransactionProxyFactoryBean.class);
+        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
         txProxyFactoryBean.setTarget(userServiceImpl);
         UserService txUserService = (UserService) txProxyFactoryBean.getObject();
 
@@ -153,7 +153,7 @@ public class UserServiceTest {
         userLevelPolicy.setUserDao(userDao);
         this.userServiceImpl.setUserLevelPolicy(userLevelPolicy);
         
-        TransactionProxyFactoryBean transactionProxyFactoryBean = context.getBean("&userService", TransactionProxyFactoryBean.class);
+        ProxyFactoryBean transactionProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
         UserService txUserService = (UserService) transactionProxyFactoryBean.getObject();
         txUserService.setUserDao(userDao);
         txUserService.setUserLevelPolicy(userLevelPolicy);
