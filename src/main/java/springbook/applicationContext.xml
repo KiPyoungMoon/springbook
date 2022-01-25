@@ -18,14 +18,13 @@
         <property name="transactionManager" ref="transactionManager"></property>
     </bean>
 
-    <bean id="transactioPointcut" class="springbook.proxy.NameMatchClassMethodPointcut">
-        <property name="mappedName" value="upgrade*"></property>
-        <property name="mappedClassName" value="*ServiceImpl"></property>
+    <bean id="transactionPointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
+        <property name="expression" value="execution(* *..*ServiceImpl.upgrade*(..))" />
     </bean>
 
     <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
         <property name="advice" ref="transactionAdvice"></property>
-        <property name="pointcut" ref="transactioPointcut"></property>
+        <property name="pointcut" ref="transactionPointcut"></property>
     </bean>
 
     <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
