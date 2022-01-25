@@ -12,20 +12,20 @@ import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.NameMatchMethodPointcut;
-import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "../../test-applicationContext.xml")
 public class StudyTest {
-    
+
     @Test
     public void pointCutAdvisor() {
         ProxyFactoryBean pFactoryBean = new ProxyFactoryBean();
         pFactoryBean.setTarget(new HelloTarget());
 
-        // NameMatchMethodPointcut nameMatchMethodPointcut = new NameMatchMethodPointcut();
+        // NameMatchMethodPointcut nameMatchMethodPointcut = new
+        // NameMatchMethodPointcut();
         NameMatchMethodPointcut classMatchMethodPointcut = new NameMatchMethodPointcut() {
             public ClassFilter getClassFilter() {
                 return new ClassFilter() {
@@ -39,15 +39,19 @@ public class StudyTest {
 
         pFactoryBean.addAdvisor(new DefaultPointcutAdvisor(classMatchMethodPointcut, new UppercaseAdvise()));
 
-        // Hello proxiedHello = (Hello) pFactoryBean.getObject(); 
+        // Hello proxiedHello = (Hello) pFactoryBean.getObject();
 
         // assertThat(proxiedHello.sayHello("Dennis"), is("HELLO DENNIS"));
         // assertThat(proxiedHello.sayHi("Dennis"), is("HI DENNIS"));
         // assertThat(proxiedHello.sayThankYou("Dennis"), is("Thank you Dennis"));
         this.checkAdviced(new HelloTarget(), classMatchMethodPointcut, true);
-        class HelloWolrd extends HelloTarget {};
+        class HelloWolrd extends HelloTarget {
+        }
+        ;
         this.checkAdviced(new HelloWolrd(), classMatchMethodPointcut, false);
-        class HelloTalk extends HelloTarget {};
+        class HelloTalk extends HelloTarget {
+        }
+        ;
         this.checkAdviced(new HelloTalk(), classMatchMethodPointcut, true);
     }
 
@@ -84,7 +88,7 @@ public class StudyTest {
         public String sayThankYou(String string) {
             return "Thank you " + string;
         }
-        
+
     }
 
     public class UppercaseAdvise implements MethodInterceptor {
@@ -97,6 +101,3 @@ public class StudyTest {
 
     }
 }
-
-
-
