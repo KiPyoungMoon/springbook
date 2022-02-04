@@ -14,6 +14,20 @@
 
     <bean id="userDao" class="springbook.user.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource"></property>
+        <property name="sqlService" ref="sqlService"></property>
+    </bean>
+
+    <bean id="sqlService" class="springbook.sql.impl.SimpleSqlServiceImpl">
+        <property name="sqlMap">
+            <map>
+                <entry key="userAdd" value="insert into users(id, name, password, level, login, recommand, email) values (?,?,?,?,?,?,?)" />
+                <entry key="userGet" value="select * from users where id = ?" />
+                <entry key="userGetAll" value="select * from users order by name" />
+                <entry key="userDelete" value="delete from users" />
+                <entry key="userCount" value="select count(id) as cnt from users" />
+                <entry key="userUpdate" value="update users set name = ?, password = ?, level = ?, login = ?, recommand = ?, email = ? where id = ?" />
+            </map>
+        </property>
     </bean>
 
     <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
