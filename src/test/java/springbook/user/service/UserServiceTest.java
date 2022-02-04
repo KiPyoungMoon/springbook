@@ -20,19 +20,21 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.dao.TransientDataAccessResourceException;
+// import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.PlatformTransactionManager;
+// import org.springframework.transaction.PlatformTransactionManager;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
 import springbook.user.exception.TestUserServiceException;
 import springbook.user.service.impl.CurrentUserLevelPolicy;
+import springbook.user.service.impl.UserServiceImpl;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "../../../test-applicationContext.xml")
@@ -42,16 +44,19 @@ public class UserServiceTest {
     UserService userService;
 
     @Autowired
+    UserService testUserService;
+
+    @Autowired
     UserDao userDao;
 
     @Autowired
     CurrentUserLevelPolicy userLevelPolicy;
 
-    @Autowired
-    PlatformTransactionManager transactionManager;
+    // @Autowired
+    // PlatformTransactionManager transactionManager;
 
-    @Autowired
-    ApplicationContext context;
+    // @Autowired
+    // ApplicationContext context;
 
     List<User> userList;
 
@@ -154,6 +159,11 @@ public class UserServiceTest {
         this.checkUserUpgraded(userList.get(1), false);
     }
 
+    @Test(expected = TransientDataAccessResourceException.class)
+    public void readOnlyTransactionAttribute() {
+        testUserService.getAll();
+    }
+
     static public class TransactionTestUserLevelPolicy extends CurrentUserLevelPolicy {
 
         private String id;
@@ -170,4 +180,16 @@ public class UserServiceTest {
             this.userDao.update(user);
         }
     }
+
+    static public class TestUserService extends UserServiceImpl {
+        public List<User> getAll() {
+            List<User> uList = super.getAll();
+
+            for (User user : uList) {
+                super.update(user);
+            }
+            return null;
+        }
+    }
+
 }

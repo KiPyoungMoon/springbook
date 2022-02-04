@@ -23,6 +23,8 @@
         <property name="userLevelPolicy" ref="currentUserLevelPolicy"></property>
     </bean>
 
+    <bean id="testUserService" class="springbook.user.service.UserServiceTest$TestUserService" parent="userService" />
+
     <bean id="currentUserLevelPolicy" class="springbook.user.service.impl.CurrentUserLevelPolicy">
         <property name="userDao" ref="userDao"></property>
         <property name="mailSender" ref="mailSender"></property>
